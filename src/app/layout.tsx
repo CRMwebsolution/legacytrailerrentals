@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { SITE_CONFIG } from "@/config/site.config";
+import { SiteDataProvider } from "@/context/SiteDataContext";
 
 export const metadata: Metadata = {
   title: `${SITE_CONFIG.LEGAL_NAME} | Trailer Rentals in ${SITE_CONFIG.LOCATION_FULL} (Visual MVP Demo)`,
@@ -17,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col">
-        {children}
+        <SiteDataProvider>{children}</SiteDataProvider>
         <Analytics />
       </body>
     </html>

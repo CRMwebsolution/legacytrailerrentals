@@ -14,12 +14,35 @@ import { FaqSection } from "@/components/FaqSection";
 import { ServiceAreaSection } from "@/components/ServiceAreaSection";
 import { FinalCtaSection } from "@/components/FinalCtaSection";
 import { ContactAndFooterSection } from "@/components/ContactAndFooterSection";
-import { getInitialSiteData } from "@/lib/site-data";
+import { useSiteData } from "@/context/SiteDataContext";
 
 export default function HomePage() {
-  // Single data-layer payload ready to be swapped with database/Supabase queries
-  const siteData = useMemo(() => getInitialSiteData(), []);
+  const { siteData } = useSiteData();
   const [selectedTrailer, setSelectedTrailer] = useState<string>("");
+
+  const activeFleet = useMemo(
+    () =>
+      siteData.fleet
+        .filter((item) => item.isActive)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [siteData.fleet]
+  );
+
+  const activePolicies = useMemo(
+    () =>
+      siteData.policies
+        .filter((p) => p.isActive)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [siteData.policies]
+  );
+
+  const activeFaqs = useMemo(
+    () =>
+      siteData.faqs
+        .filter((f) => f.isActive)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
+    [siteData.faqs]
+  );
 
   const handleSelectTrailerForRequest = (trailerName: string) => {
     setSelectedTrailer(trailerName);
@@ -43,7 +66,7 @@ export default function HomePage() {
 
         {/* 4. Trailer Fleet Preview (Visual Centerpiece + Gallery Showcase) */}
         <FleetPreviewSection
-          fleet={siteData.fleet}
+          fleet={activeFleet}
           categories={siteData.categories}
           onSelectTrailerForRequest={handleSelectTrailerForRequest}
         />
@@ -61,13 +84,13 @@ export default function HomePage() {
         <WhyChooseUsSection />
 
         {/* 8. Rental Information Preview */}
-        <RentalInfoPreviewSection policies={siteData.policies} />
+        <RentalInfoPreviewSection policies={activePolicies} />
 
         {/* 9. About the Business */}
         <AboutBusinessSection settings={siteData.settings} />
 
         {/* 10. Frequently Asked Questions */}
-        <FaqSection faqs={siteData.faqs} />
+        <FaqSection faqs={activeFaqs} />
 
         {/* 11. Service Area */}
         <ServiceAreaSection settings={siteData.settings} />
@@ -79,7 +102,7 @@ export default function HomePage() {
       {/* 13. Contact, Rental-Request Form Preview, and Footer */}
       <ContactAndFooterSection
         settings={siteData.settings}
-        fleet={siteData.fleet}
+        fleet={activeFleet}
         selectedTrailer={selectedTrailer}
         onTrailerChange={setSelectedTrailer}
       />

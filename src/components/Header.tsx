@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Phone,
   Menu,
@@ -9,9 +10,12 @@ import {
   MessageSquare,
   MapPin,
   Info,
+  Shield,
+  Sliders,
 } from "lucide-react";
 import { BusinessSettings } from "@/types/cms";
 import { DEFAULT_BUSINESS_SETTINGS } from "@/lib/site-data";
+import { useSiteData } from "@/context/SiteDataContext";
 
 const NAV_LINKS = [
   { label: "Trailers", href: "#trailers" },
@@ -28,34 +32,59 @@ interface HeaderProps {
 
 export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { adminUser, changeCount } = useSiteData();
 
   return (
     <>
-      {/* Top Concept Notice Strip */}
-      {settings.isVisualMvpDemo && (
-        <div className="bg-steel-950 text-steel-200 border-b border-steel-800 text-xs">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-full bg-brand-500/20 border border-brand-500/40 px-2.5 py-0.5 text-[11px] font-semibold text-brand-300 uppercase tracking-wider">
-                Visual MVP Demo
+      {/* Top Concept Notice & Admin Portal Strip */}
+      <div className="bg-steel-950 text-steel-200 border-b border-steel-800 text-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            {settings.isVisualMvpDemo && (
+              <>
+                <span className="inline-flex items-center gap-1 rounded-full bg-brand-500/20 border border-brand-500/40 px-2.5 py-0.5 text-[11px] font-semibold text-brand-300 uppercase tracking-wider">
+                  Visual MVP Demo
+                </span>
+                <span className="text-steel-300 hidden sm:inline">
+                  Concept preview for{" "}
+                  <strong className="text-white font-semibold">
+                    {settings.legalName}
+                  </strong>
+                </span>
+              </>
+            )}
+            {changeCount > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 border border-emerald-500/40 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                {changeCount} Live Admin {changeCount === 1 ? "Edit" : "Edits"}{" "}
+                Active (Until Refresh)
               </span>
-              <span className="text-steel-300">
-                Concept preview for{" "}
-                <strong className="text-white font-semibold">
-                  {settings.legalName}
-                </strong>{" "}
-                — Fleet, pricing &amp; policies shown as placeholders.
-              </span>
-            </div>
-            <div className="hidden md:flex items-center gap-4 text-steel-400">
-              <span className="inline-flex items-center gap-1 text-steel-300">
-                <MapPin className="w-3.5 h-3.5 text-brand-400" />
-                {settings.locationFull}
-              </span>
-            </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 ml-auto">
+            <span className="hidden md:inline-flex items-center gap-1 text-steel-300">
+              <MapPin className="w-3.5 h-3.5 text-brand-400" />
+              {settings.locationFull}
+            </span>
+            <Link
+              href="/admin"
+              className="inline-flex items-center gap-1.5 rounded-lg bg-steel-800 hover:bg-brand-600 border border-steel-700 hover:border-brand-500 px-3 py-1 text-xs font-bold text-white transition-colors"
+            >
+              {adminUser ? (
+                <>
+                  <Sliders className="w-3.5 h-3.5 text-brand-400" />
+                  <span>Open Admin Dashboard ({adminUser.email.split("@")[0]})</span>
+                </>
+              ) : (
+                <>
+                  <Shield className="w-3.5 h-3.5 text-brand-400" />
+                  <span>Admin Login</span>
+                </>
+              )}
+            </Link>
           </div>
         </div>
-      )}
+      </div>
 
       {/* Main Sticky Header */}
       <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-steel-200 shadow-sm">
@@ -106,7 +135,7 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
               ))}
             </nav>
 
-            {/* Desktop Prominent Phone / Contact Placeholder Button */}
+            {/* Desktop Prominent Phone / Contact Button */}
             <div className="hidden lg:flex items-center gap-3">
               <a
                 href={
@@ -115,15 +144,15 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                     : "#contact"
                 }
                 className="inline-flex items-center gap-2.5 rounded-xl bg-steel-900 hover:bg-steel-800 text-white px-4 py-2.5 text-sm font-semibold transition-all shadow-sm"
-                title="Phone number placeholder — adjustable from future Admin Settings"
+                title="Phone number — editable from Admin Dashboard"
               >
                 <Phone className="w-4 h-4 text-brand-400 shrink-0" />
                 <div className="text-left leading-tight">
                   <div className="text-xs font-bold text-white">
-                    (559) XXX-XXXX
+                    {settings.contactPhoneDisplay}
                   </div>
                   <div className="text-[10px] font-medium text-brand-300 uppercase tracking-wider">
-                    Phone Placeholder
+                    Call or Text
                   </div>
                 </div>
               </a>
@@ -140,10 +169,12 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
               <a
                 href="#contact"
                 className="inline-flex items-center gap-1.5 rounded-lg bg-steel-100 hover:bg-steel-200 border border-steel-300 px-3 py-2 text-xs font-bold text-steel-800"
-                aria-label="Contact Placeholder"
+                aria-label="Contact Phone"
               >
                 <Phone className="w-3.5 h-3.5 text-brand-600" />
-                <span className="hidden sm:inline">Phone Placeholder</span>
+                <span className="hidden sm:inline">
+                  {settings.contactPhoneDisplay}
+                </span>
               </a>
               <button
                 type="button"
@@ -187,10 +218,7 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                 >
                   <span className="flex items-center gap-2">
                     <Phone className="w-4 h-4 text-brand-400" />
-                    (559) XXX-XXXX
-                  </span>
-                  <span className="text-[11px] uppercase tracking-wider bg-steel-800 text-brand-300 px-2 py-0.5 rounded">
-                    Phone Placeholder
+                    {settings.contactPhoneDisplay}
                   </span>
                 </a>
                 <a
@@ -200,14 +228,23 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                 >
                   Request a Rental
                 </a>
+                <Link
+                  href="/admin"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-steel-100 hover:bg-steel-200 border border-steel-300 text-steel-900 px-4 py-3 text-sm font-bold"
+                >
+                  <Shield className="w-4 h-4 text-brand-600" />
+                  <span>
+                    {adminUser ? "Open Admin Dashboard" : "Admin Login"}
+                  </span>
+                </Link>
               </div>
 
               <div className="flex items-center gap-2 text-xs text-steel-500 bg-steel-50 rounded-lg p-2.5 border border-steel-200">
                 <Info className="w-4 h-4 text-brand-600 shrink-0" />
                 <span>
                   Serving <strong>{settings.locationShort}</strong>. Phone,
-                  hours, and inventory are structured for full Admin Dashboard
-                  control.
+                  hours, and inventory are adjustable in the Admin Dashboard.
                 </span>
               </div>
             </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   Phone,
   Mail,
@@ -612,6 +613,12 @@ export function ContactAndFooterSection({
             <a href="#contact" className="hover:text-brand-400">
               Contact
             </a>
+            <Link
+              href="/admin"
+              className="text-brand-400 hover:text-brand-300 font-bold"
+            >
+              Admin Dashboard
+            </Link>
           </nav>
         </div>
 

@@ -66,3 +66,20 @@ Chronological handoff and change log for `LegacyTrailerRental`.
 
 - Dependency added: `@vercel/analytics`.
 - Analytics: Enabled Vercel Web Analytics in `src/app/layout.tsx`.
+
+
+## 2026-11-04 8:07 AM EST — Antigravity (Gemini 4 Argon)
+
+### What it did
+
+- Added a mock Admin Login & Control Center Dashboard at `/admin` (`src/app/admin/page.tsx`) with support for `legacytrailerrentalsllc@gmail.com` (`dashboard`) and `cody@southernautomate.com` (`dashboard`).
+- Created a root-level in-memory React context (`src/context/SiteDataContext.tsx`) wrapped in `src/app/layout.tsx` so admin edits to trailer inventory, daily/weekly/deposit prices, uploaded/preset trailer photos, business hours, phone numbers, emails, pickup address, hero copy, surrounding service areas, rental policies, FAQs, and CRUD contracts immediately reflect on the live homepage (` / `) and reset cleanly on browser refresh.
+- Added `Admin Login` / `Open Admin Dashboard` navigation links in `src/components/Header.tsx` and `src/components/ContactAndFooterSection.tsx`.
+
+### Database changes
+
+- None. (In-memory mock admin session until browser refresh.)
+
+### Other relevant changes
+
+- Verified with `npx tsc --noEmit` and `npm run build` (`/` and `/admin` routes static build passed).
