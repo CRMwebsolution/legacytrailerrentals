@@ -37,7 +37,7 @@ export function SelectionAssistanceCallout({
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto shrink-0">
             <a
-              href="#rental-request"
+              href="#booking-form"
               onClick={onSelectNeedHelp}
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-bold text-sm px-6 py-3.5 shadow-sm transition-colors"
             >

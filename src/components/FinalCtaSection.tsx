@@ -1,5 +1,5 @@
 import React from "react";
-import { Truck, ClipboardList, Phone, MessageSquare } from "lucide-react";
+import { Truck, CalendarCheck, Phone, MessageSquare } from "lucide-react";
 import { BusinessSettings } from "@/types/cms";
 import { DEFAULT_BUSINESS_SETTINGS } from "@/lib/site-data";
 
@@ -22,9 +22,8 @@ export function FinalCtaSection({
         </h2>
 
         <p className="text-base sm:text-lg text-white/95 max-w-2xl mx-auto leading-relaxed">
-          Browse our trailer styles, submit a rental request with your preferred
-          dates, or call, text, or message{" "}
-          <strong>{settings.legalName}</strong> directly.
+          Browse our trailer selection, book your trailer online, or call, text,
+          or message <strong>{settings.legalName}</strong> directly.
         </p>
 
         <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5 max-w-3xl mx-auto">
@@ -37,11 +36,11 @@ export function FinalCtaSection({
           </a>
 
           <a
-            href="#rental-request"
+            href="#booking-form"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-white hover:bg-steel-50 text-steel-950 font-bold text-sm sm:text-base px-6 py-4 shadow-lg transition-all"
           >
-            <ClipboardList className="w-5 h-5 text-brand-600" />
-            <span>Submit a Rental Request</span>
+            <CalendarCheck className="w-5 h-5 text-brand-600" />
+            <span>Book a Trailer</span>
           </a>
 
           <a

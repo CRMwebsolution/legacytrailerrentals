@@ -2,16 +2,35 @@ import {
   TrailerInventoryItem,
   RentalPolicySection,
   FaqEntry,
-  ContractTemplate,
+  TrailerContract,
 } from "@/types/cms";
 
 export type DemoTrailerItem = TrailerInventoryItem;
 
+export function createDefaultTrailerContract(
+  trailerName: string
+): TrailerContract {
+  return {
+    title: `Rental Agreement: ${trailerName}`,
+    version: "1.0",
+    summary: `Per-trailer rental agreement for ${trailerName}. Must be signed at booking before online payment.`,
+    termsBody: [
+      `1. RENTAL EQUIPMENT: Renter agrees to lease "${trailerName}" from Legacy Trailer Rentals LLC in Madera, California.`,
+      "2. CONDITION & RETURN: Renter acknowledges receiving the trailer in good working order and agrees to return it clean and undamaged by the scheduled return date.",
+      "3. TOW VEHICLE & SAFETY: Renter certifies that their tow vehicle, hitch receiver, coupler ball size, brake controller, and light connector are properly rated for this specific trailer.",
+      "4. INSURANCE & LIABILITY: Renter must maintain valid driver's license and auto liability insurance covering towed equipment during the rental period.",
+      "5. OWNER POLICY PLACEHOLDER: Final deposit, late fee, and damage terms supplied by the business owner will appear here.",
+    ].join("\n\n"),
+    requiresDriverLicense: true,
+    requiresInsuranceProof: true,
+    requiresSignature: true,
+    updatedAt: "2026-11-04T00:00:00.000Z",
+  };
+}
+
 /**
- * Sample trailer inventory items structured for future Admin Dashboard CRUD:
- * - `photos` array maps to `inventory_photos` (admin can upload, reorder, delete photos)
- * - `pricingRules` array maps to `pricing_rules` (admin can change daily/weekly/deposit rates)
- * - `defaultContractId` maps to `contracts` (admin can CRUD contracts and assign to trailers)
+ * Sample trailer inventory items with individual per-trailer contracts.
+ * No em dashes are used in any text.
  */
 export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
   {
@@ -31,9 +50,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "Slide-In Loading Ramps",
       "Tarp Kit Placeholder",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
-      "Demonstrates how a heavy-duty dump trailer card will display dimensions, hydraulic features, and rental rate placeholders.",
+      "Demonstrates how a heavy-duty dump trailer card displays dimensions, hydraulic features, and rental rate placeholders.",
     searchKeywords: [
       "dump",
       "hydraulic",
@@ -44,7 +63,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "14",
       "hauling",
     ],
-    defaultContractId: "contract-standard-trailer",
+    contract: createDefaultTrailerContract(
+      "14' Hydraulic Dump Trailer (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-dump-14-1",
@@ -153,7 +174,7 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "2\" Ball Coupler (Sample)",
       "Tie-Down Rail Slots",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
       "Demonstrates an approachable everyday utility trailer card for yard runs, mowers, ATVs, furniture, and local Madera errands.",
     searchKeywords: [
@@ -167,7 +188,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "ramp",
       "light",
     ],
-    defaultContractId: "contract-standard-trailer",
+    contract: createDefaultTrailerContract(
+      "6' × 12' Utility & Landscape Trailer (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-utility-12-1",
@@ -254,7 +277,7 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "D-Ring Tie-Downs",
       "Removable Fender Option (Sample)",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
       "Demonstrates a vehicle and UTV transport card layout with clear deck width, tie-down specs, and tow requirement callouts.",
     searchKeywords: [
@@ -268,7 +291,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "utv",
       "buggy",
     ],
-    defaultContractId: "contract-standard-trailer",
+    contract: createDefaultTrailerContract(
+      "20' Steel-Deck Car Hauler (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-car-20-1",
@@ -365,7 +390,7 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "Interior E-Track / Tie-Downs",
       "Lockable Side Door",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
       "Demonstrates an enclosed moving and cargo trailer listing for weather-protected household moves, events, and commercial transport.",
     searchKeywords: [
@@ -378,7 +403,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "furniture",
       "weather",
     ],
-    defaultContractId: "contract-standard-trailer",
+    contract: createDefaultTrailerContract(
+      "7' × 16' Enclosed Cargo Trailer (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-enclosed-16-1",
@@ -475,7 +502,7 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "Spring-Assisted Ramps",
       "Rub Rail & Stake Pockets",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
       "Demonstrates a farm, ranch, and construction equipment flatbed card for tractors, skid steers, palletized loads, and ag materials.",
     searchKeywords: [
@@ -489,7 +516,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "ranch",
       "22",
     ],
-    defaultContractId: "contract-heavy-equipment",
+    contract: createDefaultTrailerContract(
+      "22' Heavy-Duty Equipment Flatbed (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-equip-22-1",
@@ -576,7 +605,7 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "Combo Gate",
       "Spare Tire Mount",
     ],
-    availabilityStatusText: "Contact for availability",
+    availabilityStatusText: "Available to Book (Sample)",
     summary:
       "Demonstrates an additional dump trailer card size to show how multiple sizes within the same category filter and compare.",
     searchKeywords: [
@@ -588,7 +617,9 @@ export const DEMO_FLEET_ITEMS: TrailerInventoryItem[] = [
       "concrete",
       "landscape",
     ],
-    defaultContractId: "contract-standard-trailer",
+    contract: createDefaultTrailerContract(
+      "12' Low-Profile Dump Trailer (Sample Listing)"
+    ),
     photos: [
       {
         id: "photo-dump-12-1",
@@ -686,7 +717,7 @@ export const DEMO_POLICY_SECTIONS: RentalPolicySection[] = [
     items: [
       "Valid driver's license & minimum age requirement (Owner details pending)",
       "Auto insurance verification requirements (Owner details pending)",
-      "Signed rental agreement terms (Owner details pending)",
+      "Signed rental agreement before payment completion",
     ],
   },
   {
@@ -698,7 +729,7 @@ export const DEMO_POLICY_SECTIONS: RentalPolicySection[] = [
     sortOrder: 3,
     isActive: true,
     items: [
-      "Accepted payment methods (Owner details pending)",
+      "Online booking payment & accepted payment methods (Owner details pending)",
       "Security deposit amount & refund timeline (Owner details pending)",
       "Multi-day or weekly rate structure (Owner details pending)",
     ],
@@ -724,7 +755,7 @@ export const DEMO_FAQS: FaqEntry[] = [
     id: "faq-requirements",
     question: "What is required to rent?",
     answer:
-      "Details coming from the owner. This space will list Legacy Trailer Rentals LLC's exact rental requirements—such as valid driver's license, proof of insurance, minimum age, and signed rental agreement—once finalized by the business owner.",
+      "Details coming from the owner. This space will list Legacy Trailer Rentals LLC's exact rental requirements, such as a valid driver's license, proof of insurance, minimum age, and the rental agreement signed during booking.",
     badgeText: "Owner Policy Placeholder",
     sortOrder: 1,
     isActive: true,
@@ -733,7 +764,7 @@ export const DEMO_FAQS: FaqEntry[] = [
     id: "faq-pickup-return",
     question: "How does pickup and return work?",
     answer:
-      "Details coming from the owner. Once your rental request is reviewed and availability is confirmed, the business will provide your scheduled Madera pickup location, hookup walkthrough details, and return instructions.",
+      "Details coming from the owner. After you choose your trailer, sign the rental agreement, and complete booking, you will pick up your trailer in Madera at your scheduled time and return it when finished.",
     badgeText: "Owner Policy Placeholder",
     sortOrder: 2,
     isActive: true,
@@ -749,10 +780,10 @@ export const DEMO_FAQS: FaqEntry[] = [
   },
   {
     id: "faq-availability",
-    question: "How is availability confirmed?",
+    question: "How does booking work?",
     answer:
-      "Submitting a request on the website does not automatically lock in a reservation. After you send a rental request—or reach out by phone, text, or message—Legacy Trailer Rentals LLC reviews the requested dates and contacts you directly to confirm availability.",
-    badgeText: "Request-First Process",
+      "Select your trailer and dates in the booking form, review and sign the trailer's rental contract, and complete the online payment step to finalize your booking.",
+    badgeText: "Booking Process",
     sortOrder: 4,
     isActive: true,
   },
@@ -760,7 +791,7 @@ export const DEMO_FAQS: FaqEntry[] = [
     id: "faq-payment",
     question: "What payment methods are accepted?",
     answer:
-      "Details coming from the owner. Accepted payment methods, deposit amounts, and when payment is due will be displayed here once provided by the owner.",
+      "Details coming from the owner. Online card payment options, deposit amounts, and accepted payment methods will be finalized here by the owner.",
     badgeText: "Owner Policy Placeholder",
     sortOrder: 5,
     isActive: true,
@@ -773,41 +804,5 @@ export const DEMO_FAQS: FaqEntry[] = [
     badgeText: "Owner Policy Placeholder",
     sortOrder: 6,
     isActive: true,
-  },
-];
-
-/**
- * Seed contract templates ready for future Admin Dashboard Contract CRUD (`contracts` table).
- */
-export const DEMO_CONTRACT_TEMPLATES: ContractTemplate[] = [
-  {
-    id: "contract-standard-trailer",
-    title: "Standard Trailer Rental Agreement (Owner Template Placeholder)",
-    slug: "standard-trailer-rental-agreement",
-    version: "1.0-draft",
-    description:
-      "Placeholder contract template slot for utility, enclosed, dump, and car hauler rentals. Fully editable from the future Admin Contracts panel.",
-    bodyContent:
-      "Contract terms, liability release, deposit rules, and inspection checklist will be managed by the business owner via the Admin Contracts CRUD screen.",
-    requiresDriverLicense: true,
-    requiresInsuranceProof: true,
-    requiresSignature: true,
-    isActive: true,
-    updatedAt: "2026-11-03T00:00:00.000Z",
-  },
-  {
-    id: "contract-heavy-equipment",
-    title: "Heavy Equipment & Deckover Addendum (Owner Template Placeholder)",
-    slug: "heavy-equipment-addendum",
-    version: "1.0-draft",
-    description:
-      "Optional secondary contract template illustrating multi-contract CRUD support in the future Admin Dashboard.",
-    bodyContent:
-      "Tow rating verification and heavy-load tie-down acknowledgment placeholder.",
-    requiresDriverLicense: true,
-    requiresInsuranceProof: true,
-    requiresSignature: true,
-    isActive: true,
-    updatedAt: "2026-11-03T00:00:00.000Z",
   },
 ];

@@ -44,12 +44,12 @@ export default function HomePage() {
     [siteData.faqs]
   );
 
-  const handleSelectTrailerForRequest = (trailerName: string) => {
+  const handleSelectTrailerForBooking = (trailerName: string) => {
     setSelectedTrailer(trailerName);
   };
 
   const handleSelectNeedHelp = () => {
-    setSelectedTrailer("Not sure yet — please help me choose");
+    setSelectedTrailer("Not sure yet (please help me choose)");
   };
 
   return (
@@ -68,7 +68,7 @@ export default function HomePage() {
         <FleetPreviewSection
           fleet={activeFleet}
           categories={siteData.categories}
-          onSelectTrailerForRequest={handleSelectTrailerForRequest}
+          onSelectTrailerForBooking={handleSelectTrailerForBooking}
         />
 
         {/* 5. Trailer-Selection Assistance */}
@@ -99,7 +99,7 @@ export default function HomePage() {
         <FinalCtaSection settings={siteData.settings} />
       </main>
 
-      {/* 13. Contact, Rental-Request Form Preview, and Footer */}
+      {/* 13. Contact, Online Booking, Contract Signature, Mock Payment & Footer */}
       <ContactAndFooterSection
         settings={siteData.settings}
         fleet={activeFleet}

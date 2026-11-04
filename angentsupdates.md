@@ -83,3 +83,25 @@ Chronological handoff and change log for `LegacyTrailerRental`.
 ### Other relevant changes
 
 - Verified with `npx tsc --noEmit` and `npm run build` (`/` and `/admin` routes static build passed).
+
+
+## 2026-11-04 11:38 AM EST — Antigravity (Gemini 4 Argon)
+
+### What it did
+
+- Updated `How It Works` (`src/components/HowItWorksSection.tsx`) to the 4-step sequence: `Choose a Trailer`, `Book`, `Pick Up`, and `Return`.
+- Replaced the rental request form with a 3-step `Book a Trailer` checkout flow (`src/components/ContactAndFooterSection.tsx`):
+  1. **Booking Details**: Customer info, trailer selection, dates, tow vehicle, and Pickup or Delivery options (`"Pickup in Madera, CA"` and `"Request Delivery (specify in comment box)"`).
+  2. **Sign Contract**: Displays the selected trailer's specific rental contract, requires checking every acknowledgment item, typing the full legal name, and supports an interactive signature pad before unlocking payment.
+  3. **Online Payment**: Interactive mock online payment checkout supporting Credit/Debit Card (with a one-click `"Fill Demo Test Card"` helper) and Mock Apple Pay / Google Pay, followed by a confirmed booking and payment receipt screen.
+- Restructured rental contracts (`src/types/cms.ts`, `src/data/demo-fleet.ts`, `src/context/SiteDataContext.tsx`, `src/app/admin/page.tsx`) to be stored and edited **per trailer** (`TrailerInventoryItem.contract`) rather than per category.
+- Added editable **Facebook** and **Google Business Profile** name and URL fields to the Admin Dashboard (`Tab 3: Hours, Phones & Socials` in `src/app/admin/page.tsx`) and wired `src/components/AboutBusinessSection.tsx` and `src/components/ContactAndFooterSection.tsx` so Facebook and Google Business links dynamically appear on the homepage when filled out.
+- Removed all occurrences of the word `CRUD` and removed all em dashes across the application and `README.md`.
+
+### Database changes
+
+- None.
+
+### Other relevant changes
+
+- Verified zero TypeScript errors (`npx tsc --noEmit`) and clean Next.js production build (`npm run build`).

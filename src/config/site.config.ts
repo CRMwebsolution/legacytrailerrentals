@@ -1,9 +1,6 @@
 /**
  * Centralized default configuration for Legacy Trailer Rentals LLC.
- *
- * When a database is connected later, these values serve as the initial seed
- * and fallback defaults for the `business_settings` table managed via the
- * Admin Dashboard.
+ * Note: No em dashes are used anywhere in configuration strings.
  */
 
 export const SITE_CONFIG = {
@@ -21,15 +18,15 @@ export const SITE_CONFIG = {
   INSTAGRAM_HANDLE: "@legacytrailerrentalz",
   INSTAGRAM_URL: "https://instagram.com/legacytrailerrentalz",
 
-  // Admin-Adjustable Placeholders (To be updated via Admin Dashboard or owner config)
+  // Admin-Adjustable Placeholders
   CONTACT_PHONE_DISPLAY: "(559) XXX-XXXX (Phone Placeholder)",
   CONTACT_PHONE_TEL: "",
   CONTACT_PHONE_BUTTON_LABEL: "Call / Text: (559) XXX-XXXX (Placeholder)",
   CONTACT_EMAIL_DISPLAY: "contact@legacytrailerrentals-demo.com (Placeholder)",
-  PICKUP_ADDRESS_DISPLAY: "Madera, CA — Pickup Location Details Coming from Owner",
-  BUSINESS_HOURS_DISPLAY: "Hours of Operation — Details Coming from Owner",
-  GOOGLE_BUSINESS_PLACEHOLDER_LABEL: "Google Business Profile (Link Placeholder)",
-  FACEBOOK_PLACEHOLDER_LABEL: "Facebook Page (Link Placeholder)",
+  PICKUP_ADDRESS_DISPLAY: "Madera, CA (Pickup Location Details Coming from Owner)",
+  BUSINESS_HOURS_DISPLAY: "Hours of Operation (Details Coming from Owner)",
+  GOOGLE_BUSINESS_PLACEHOLDER_LABEL: "Google Business Profile",
+  FACEBOOK_PLACEHOLDER_LABEL: "Facebook Page",
 
   // Terminology
   ITEM_LABEL_SINGULAR: "Trailer",

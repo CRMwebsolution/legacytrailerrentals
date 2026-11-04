@@ -1,5 +1,12 @@
 import React from "react";
-import { Image as ImageIcon, MapPin, MessageSquare, ArrowRight } from "lucide-react";
+import {
+  Image as ImageIcon,
+  MapPin,
+  MessageSquare,
+  ArrowRight,
+  Globe,
+  Share2,
+} from "lucide-react";
 import { BusinessSettings } from "@/types/cms";
 import { DEFAULT_BUSINESS_SETTINGS } from "@/lib/site-data";
 
@@ -10,6 +17,17 @@ interface AboutBusinessSectionProps {
 export function AboutBusinessSection({
   settings = DEFAULT_BUSINESS_SETTINGS,
 }: AboutBusinessSectionProps) {
+  const hasFacebook = Boolean(
+    settings.facebookUrl &&
+      settings.facebookUrl.trim() &&
+      settings.facebookUrl !== "#facebook-placeholder"
+  );
+  const hasGoogleBusiness = Boolean(
+    settings.googleBusinessUrl &&
+      settings.googleBusinessUrl.trim() &&
+      settings.googleBusinessUrl !== "#google-profile-placeholder"
+  );
+
   return (
     <section className="py-16 sm:py-20 bg-white border-b border-steel-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -56,13 +74,13 @@ export function AboutBusinessSection({
               business serving <strong>{settings.locationFull}</strong>. Whether
               you are hauling materials, handling a weekend project, or
               transporting equipment, our focus is on offering affordable rental
-              options and a straightforward rental request experience.
+              options and a simple online booking experience.
             </p>
 
             <p className="text-sm sm:text-base text-steel-600 leading-relaxed">
-              Instead of navigating complicated automated systems, you can reach
-              out directly, let us know what you need to haul, and get helpful
-              personal service from a local {settings.confirmedCity} business.
+              Choose your trailer, review and sign the rental agreement during
+              booking, and count on helpful personal service from a local{" "}
+              {settings.confirmedCity} business.
             </p>
 
             <div className="rounded-xl bg-steel-50 border border-steel-200 p-4 text-xs text-steel-600">
@@ -74,7 +92,7 @@ export function AboutBusinessSection({
               story has been invented for this demo.
             </div>
 
-            <div className="pt-2 flex flex-wrap items-center gap-3.5">
+            <div className="pt-2 flex flex-wrap items-center gap-3">
               <a
                 href="#contact"
                 className="inline-flex items-center gap-2 rounded-xl bg-steel-900 hover:bg-steel-800 text-white font-bold text-sm px-6 py-3.5 shadow-sm transition-colors"
@@ -91,6 +109,30 @@ export function AboutBusinessSection({
               >
                 <span>Instagram: {settings.instagramHandle}</span>
               </a>
+              {hasFacebook && (
+                <a
+                  href={settings.facebookUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-800 font-bold text-sm px-5 py-3.5 transition-colors"
+                >
+                  <Share2 className="w-4 h-4 text-brand-600" />
+                  <span>{settings.facebookLabel || "Facebook"}</span>
+                </a>
+              )}
+              {hasGoogleBusiness && (
+                <a
+                  href={settings.googleBusinessUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-xl bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-800 font-bold text-sm px-5 py-3.5 transition-colors"
+                >
+                  <Globe className="w-4 h-4 text-brand-600" />
+                  <span>
+                    {settings.googleBusinessLabel || "Google Business Profile"}
+                  </span>
+                </a>
+              )}
             </div>
           </div>
         </div>

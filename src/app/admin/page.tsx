@@ -25,8 +25,10 @@ import {
   MapPin,
   ShieldCheck,
   Sparkles,
+  Share2,
 } from "lucide-react";
 import { useSiteData } from "@/context/SiteDataContext";
+import { createDefaultTrailerContract } from "@/data/demo-fleet";
 import { getPrimaryTrailerPhoto } from "@/lib/site-data";
 import { TrailerInventoryItem } from "@/types/cms";
 
@@ -59,13 +61,11 @@ export default function AdminDashboardPage() {
     updateTrailer,
     deleteTrailer,
     updateTrailerPricing,
+    updateTrailerContract,
     addTrailerPhoto,
     setPrimaryTrailerPhoto,
     updateTrailerPhotoCaption,
     deleteTrailerPhoto,
-    addContract,
-    updateContract,
-    deleteContract,
     updatePolicySection,
     addFaq,
     updateFaq,
@@ -91,6 +91,10 @@ export default function AdminDashboardPage() {
   const [newPhotoCaption, setNewPhotoCaption] = useState("");
   const [newPhotoIsPrimary, setNewPhotoIsPrimary] = useState(false);
 
+  // Selected trailer for Per-Trailer Contract tab
+  const [selectedContractTrailerId, setSelectedContractTrailerId] =
+    useState<string>(siteData.fleet[0]?.id ?? "");
+
   // New Trailer Modal / Form state
   const [showAddTrailerForm, setShowAddTrailerForm] = useState(false);
   const [newTrailerName, setNewTrailerName] = useState("");
@@ -109,16 +113,6 @@ export default function AdminDashboardPage() {
 
   // New Service Area state
   const [newServiceAreaName, setNewServiceAreaName] = useState("");
-
-  // New Contract state
-  const [showAddContractForm, setShowAddContractForm] = useState(false);
-  const [newContractTitle, setNewContractTitle] = useState("");
-  const [newContractVersion, setNewContractVersion] = useState("1.0");
-  const [newContractDesc, setNewContractDesc] = useState("");
-  const [newContractBody, setNewContractBody] = useState("");
-  const [newContractLicense, setNewContractLicense] = useState(true);
-  const [newContractInsurance, setNewContractInsurance] = useState(true);
-  const [newContractSignature, setNewContractSignature] = useState(true);
 
   // New FAQ state
   const [newFaqQuestion, setNewFaqQuestion] = useState("");
@@ -151,10 +145,11 @@ export default function AdminDashboardPage() {
     e.preventDefault();
     if (!newTrailerName.trim()) return;
     const id = `trailer-${Date.now()}`;
+    const trimmedName = newTrailerName.trim();
     const created: TrailerInventoryItem = {
       id,
-      slug: newTrailerName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
-      name: newTrailerName.trim(),
+      slug: trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      name: trimmedName,
       category: newTrailerCategory.trim() || "Utility Trailers",
       isActive: true,
       isDemoPlaceholder: false,
@@ -166,20 +161,20 @@ export default function AdminDashboardPage() {
         .split(",")
         .map((s) => s.trim())
         .filter(Boolean),
-      availabilityStatusText: "Contact for availability",
+      availabilityStatusText: "Available to Book",
       summary: "Added via Admin Dashboard.",
       searchKeywords: [
-        newTrailerName.toLowerCase(),
+        trimmedName.toLowerCase(),
         newTrailerCategory.toLowerCase(),
       ],
-      defaultContractId: siteData.contracts[0]?.id ?? null,
+      contract: createDefaultTrailerContract(trimmedName),
       photos: [
         {
           id: `photo-${Date.now()}`,
           inventoryId: id,
           url: newTrailerImage || "/images/demo/dump-trailer.png",
-          alt: newTrailerName.trim(),
-          caption: `${newTrailerName.trim()} — Main View`,
+          alt: trimmedName,
+          caption: `${trimmedName} Main View`,
           isPrimary: true,
           sortOrder: 1,
           isPlaceholder: false,
@@ -207,7 +202,7 @@ export default function AdminDashboardPage() {
           inventoryId: id,
           rateType: "security_deposit",
           amount: null,
-          displayLabel: "Deposit: Confirmed on request",
+          displayLabel: "Deposit confirmed at booking",
           isActive: true,
         },
       ],
@@ -215,6 +210,7 @@ export default function AdminDashboardPage() {
 
     addTrailer(created);
     setSelectedPhotoTrailerId(created.id);
+    setSelectedContractTrailerId(created.id);
     setNewTrailerName("");
     setNewTrailerDimensions("");
     setNewTrailerCapacity("");
@@ -280,8 +276,8 @@ export default function AdminDashboardPage() {
             </h1>
             <p className="text-xs sm:text-sm text-steel-600">
               Sign in to adjust trailer photos, prices, hours, phone numbers,
-              inventory, policies, and contracts. Changes persist in memory
-              until you refresh the browser.
+              socials, inventory, policies, and per-trailer contracts. Changes
+              persist in memory until you refresh the browser.
             </p>
           </div>
 
@@ -393,6 +389,10 @@ export default function AdminDashboardPage() {
     siteData.fleet.find((t) => t.id === selectedPhotoTrailerId) ??
     siteData.fleet[0];
 
+  const selectedContractTrailer =
+    siteData.fleet.find((t) => t.id === selectedContractTrailerId) ??
+    siteData.fleet[0];
+
   return (
     <div className="min-h-screen bg-steel-100 text-steel-900 flex flex-col">
       {/* Top Sticky Admin Bar */}
@@ -500,7 +500,7 @@ export default function AdminDashboardPage() {
               }`}
             >
               <Settings className="w-4 h-4" />
-              <span>3. Hours, Phones &amp; Settings</span>
+              <span>3. Hours, Phones &amp; Socials</span>
             </button>
 
             <button
@@ -513,7 +513,7 @@ export default function AdminDashboardPage() {
               }`}
             >
               <FileText className="w-4 h-4" />
-              <span>4. Contracts CRUD ({siteData.contracts.length})</span>
+              <span>4. Trailer Contracts</span>
             </button>
 
             <button
@@ -706,7 +706,9 @@ export default function AdminDashboardPage() {
                           onChange={(e) =>
                             handleFileUploadToPhotoUrl(e, (url) => {
                               setNewTrailerImage(url);
-                              showToast("Uploaded custom photo for new trailer!");
+                              showToast(
+                                "Uploaded custom photo for new trailer!"
+                              );
                             })
                           }
                         />
@@ -792,7 +794,7 @@ export default function AdminDashboardPage() {
                             {trailer.isActive ? (
                               <>
                                 <Eye className="w-3.5 h-3.5" />
-                                <span>Visible on Site</span>
+                                <span>Visible</span>
                               </>
                             ) : (
                               <>
@@ -812,6 +814,18 @@ export default function AdminDashboardPage() {
                           >
                             <Camera className="w-3.5 h-3.5 text-brand-600" />
                             <span>Photos</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedContractTrailerId(trailer.id);
+                              setActiveTab("contracts");
+                            }}
+                            className="inline-flex items-center justify-center gap-1 rounded-xl bg-steel-100 hover:bg-brand-50 border border-steel-300 px-3 py-2 text-xs font-bold text-steel-800"
+                          >
+                            <FileText className="w-3.5 h-3.5 text-brand-600" />
+                            <span>Contract</span>
                           </button>
 
                           <button
@@ -997,8 +1011,8 @@ export default function AdminDashboardPage() {
                           </div>
                         </div>
 
-                        {/* Specs & Assigned Contract */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                        {/* Specs & Per-Trailer Contract Link */}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 items-end">
                           <div>
                             <label className="block text-[11px] font-bold uppercase tracking-wider text-steel-500 mb-1">
                               Spec Pills (Comma Separated)
@@ -1018,26 +1032,26 @@ export default function AdminDashboardPage() {
                             />
                           </div>
 
-                          <div>
-                            <label className="block text-[11px] font-bold uppercase tracking-wider text-steel-500 mb-1">
-                              Assigned Rental Contract Template
-                            </label>
-                            <select
-                              value={trailer.defaultContractId ?? ""}
-                              onChange={(e) =>
-                                updateTrailer(trailer.id, {
-                                  defaultContractId: e.target.value || null,
-                                })
-                              }
-                              className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3 py-2 text-xs font-semibold text-steel-900"
+                          <div className="flex items-center justify-between gap-2 rounded-xl bg-steel-50 border border-steel-200 px-3.5 py-2">
+                            <div className="min-w-0">
+                              <span className="block text-[10px] font-bold uppercase text-steel-500">
+                                This Trailer&apos;s Rental Contract
+                              </span>
+                              <span className="block text-xs font-bold text-steel-900 truncate">
+                                {trailer.contract.title} (v
+                                {trailer.contract.version})
+                              </span>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setSelectedContractTrailerId(trailer.id);
+                                setActiveTab("contracts");
+                              }}
+                              className="shrink-0 rounded-lg bg-brand-600 hover:bg-brand-700 text-white px-3 py-1.5 text-xs font-bold"
                             >
-                              <option value="">No contract assigned</option>
-                              {siteData.contracts.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                  {c.title} ({c.version})
-                                </option>
-                              ))}
-                            </select>
+                              Edit Contract
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -1108,7 +1122,7 @@ export default function AdminDashboardPage() {
                             handleFileUploadToPhotoUrl(e, (dataUrl) => {
                               setNewPhotoUrl(dataUrl);
                               showToast(
-                                "Image loaded from device! Click 'Add Photo to Trailer' to save."
+                                "Image loaded from device! Click 'Add Photo' to save."
                               );
                             })
                           }
@@ -1283,95 +1297,115 @@ export default function AdminDashboardPage() {
         )}
 
         {/* ====================================================================
-            TAB 3: BUSINESS SETTINGS, HOURS, PHONES & SERVICE AREA
+            TAB 3: BUSINESS SETTINGS, HOURS, PHONES & SOCIALS
            ==================================================================== */}
         {activeTab === "settings" && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Contact, Hours & Phones */}
-            <div className="lg:col-span-6 bg-white rounded-2xl p-6 border border-steel-200 shadow-sm space-y-5">
-              <div className="flex items-center gap-2.5 border-b border-steel-200 pb-3">
-                <Phone className="w-5 h-5 text-brand-600" />
-                <h2 className="font-display text-xl font-extrabold text-steel-900">
-                  Phone Numbers, Hours &amp; Pickup Info
-                </h2>
+            {/* Contact, Hours, Phones & Socials */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="bg-white rounded-2xl p-6 border border-steel-200 shadow-sm space-y-5">
+                <div className="flex items-center gap-2.5 border-b border-steel-200 pb-3">
+                  <Phone className="w-5 h-5 text-brand-600" />
+                  <h2 className="font-display text-xl font-extrabold text-steel-900">
+                    Phone Numbers, Hours &amp; Pickup Info
+                  </h2>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
+                      Displayed Phone Number (Header, Callout &amp; Footer)
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.settings.contactPhoneDisplay}
+                      onChange={(e) =>
+                        updateSettings({ contactPhoneDisplay: e.target.value })
+                      }
+                      placeholder="e.g., (559) 555-0144"
+                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-bold text-steel-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
+                      Click-to-Call Dial Number (tel: link, optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.settings.contactPhoneTel}
+                      onChange={(e) =>
+                        updateSettings({ contactPhoneTel: e.target.value })
+                      }
+                      placeholder="e.g., 5595550144"
+                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
+                      Public Contact Email
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.settings.contactEmailDisplay}
+                      onChange={(e) =>
+                        updateSettings({ contactEmailDisplay: e.target.value })
+                      }
+                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-steel-600 mb-1">
+                      <Clock className="w-3.5 h-3.5 text-brand-600" />
+                      Business / Pickup Hours
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.settings.businessHoursDisplay}
+                      onChange={(e) =>
+                        updateSettings({ businessHoursDisplay: e.target.value })
+                      }
+                      placeholder="e.g., Mon to Sat: 7:00 AM to 6:00 PM"
+                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-semibold text-steel-900"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-steel-600 mb-1">
+                      <MapPin className="w-3.5 h-3.5 text-brand-600" />
+                      Pickup Address / Location Display
+                    </label>
+                    <input
+                      type="text"
+                      value={siteData.settings.pickupAddressDisplay}
+                      onChange={(e) =>
+                        updateSettings({ pickupAddressDisplay: e.target.value })
+                      }
+                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
-                    Displayed Phone Number (Header, Callout &amp; Footer)
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.settings.contactPhoneDisplay}
-                    onChange={(e) =>
-                      updateSettings({ contactPhoneDisplay: e.target.value })
-                    }
-                    placeholder="e.g., (559) 555-0144"
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-bold text-steel-900"
-                  />
+              {/* Social Profiles Card: Instagram, Facebook, Google Business */}
+              <div className="bg-white rounded-2xl p-6 border border-steel-200 shadow-sm space-y-4">
+                <div className="flex items-center gap-2.5 border-b border-steel-200 pb-3">
+                  <Share2 className="w-5 h-5 text-brand-600" />
+                  <div>
+                    <h2 className="font-display text-xl font-extrabold text-steel-900">
+                      Socials &amp; Business Profiles
+                    </h2>
+                    <p className="text-xs text-steel-500">
+                      When Facebook or Google Business URLs are filled out
+                      below, they automatically appear as clickable links on the
+                      homepage.
+                    </p>
+                  </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
-                    Click-to-Call Dial Number (`tel:` link, optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.settings.contactPhoneTel}
-                    onChange={(e) =>
-                      updateSettings({ contactPhoneTel: e.target.value })
-                    }
-                    placeholder="e.g., 5595550144"
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
-                    Public Contact Email
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.settings.contactEmailDisplay}
-                    onChange={(e) =>
-                      updateSettings({ contactEmailDisplay: e.target.value })
-                    }
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-steel-600 mb-1">
-                    <Clock className="w-3.5 h-3.5 text-brand-600" />
-                    Business / Pickup Hours
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.settings.businessHoursDisplay}
-                    onChange={(e) =>
-                      updateSettings({ businessHoursDisplay: e.target.value })
-                    }
-                    placeholder="e.g., Mon–Sat: 7:00 AM – 6:00 PM • Sun by Appointment"
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-semibold text-steel-900"
-                  />
-                </div>
-
-                <div>
-                  <label className="flex items-center gap-1.5 text-xs font-bold uppercase text-steel-600 mb-1">
-                    <MapPin className="w-3.5 h-3.5 text-brand-600" />
-                    Pickup Address / Location Display
-                  </label>
-                  <input
-                    type="text"
-                    value={siteData.settings.pickupAddressDisplay}
-                    onChange={(e) =>
-                      updateSettings({ pickupAddressDisplay: e.target.value })
-                    }
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
-                  />
-                </div>
-
+                {/* Instagram */}
                 <div>
                   <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
                     Instagram Handle &amp; URL
@@ -1383,6 +1417,7 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         updateSettings({ instagramHandle: e.target.value })
                       }
+                      placeholder="@legacytrailerrentalz"
                       className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
                     />
                     <input
@@ -1391,6 +1426,61 @@ export default function AdminDashboardPage() {
                       onChange={(e) =>
                         updateSettings({ instagramUrl: e.target.value })
                       }
+                      placeholder="https://instagram.com/legacytrailerrentalz"
+                      className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Facebook */}
+                <div>
+                  <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
+                    Facebook Page Display Name &amp; URL
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      value={siteData.settings.facebookLabel}
+                      onChange={(e) =>
+                        updateSettings({ facebookLabel: e.target.value })
+                      }
+                      placeholder="Facebook Page"
+                      className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
+                    />
+                    <input
+                      type="url"
+                      value={siteData.settings.facebookUrl}
+                      onChange={(e) =>
+                        updateSettings({ facebookUrl: e.target.value })
+                      }
+                      placeholder="https://facebook.com/yourpage"
+                      className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
+                    />
+                  </div>
+                </div>
+
+                {/* Google Business Profile */}
+                <div>
+                  <label className="block text-xs font-bold uppercase text-steel-600 mb-1">
+                    Google Business Profile Display Name &amp; URL
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                    <input
+                      type="text"
+                      value={siteData.settings.googleBusinessLabel}
+                      onChange={(e) =>
+                        updateSettings({ googleBusinessLabel: e.target.value })
+                      }
+                      placeholder="Google Business Profile"
+                      className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
+                    />
+                    <input
+                      type="url"
+                      value={siteData.settings.googleBusinessUrl}
+                      onChange={(e) =>
+                        updateSettings({ googleBusinessUrl: e.target.value })
+                      }
+                      placeholder="https://maps.google.com/..."
                       className="rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
                     />
                   </div>
@@ -1557,79 +1647,111 @@ export default function AdminDashboardPage() {
         )}
 
         {/* ====================================================================
-            TAB 4: CONTRACTS CRUD
+            TAB 4: PER-TRAILER CONTRACTS MANAGER
            ==================================================================== */}
-        {activeTab === "contracts" && (
+        {activeTab === "contracts" && selectedContractTrailer && (
           <div className="space-y-6">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-2xl p-6 border border-steel-200 shadow-sm">
-              <div>
-                <h1 className="font-display text-2xl font-extrabold text-steel-900">
-                  Rental Contracts CRUD Manager
-                </h1>
-                <p className="text-sm text-steel-600 mt-1">
-                  Create, edit, version, and delete rental agreement templates
-                  and assign them to trailers in your fleet.
-                </p>
+            <div className="bg-white rounded-2xl p-6 border border-steel-200 shadow-sm space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-steel-200 pb-5">
+                <div>
+                  <h1 className="font-display text-2xl font-extrabold text-steel-900">
+                    Per-Trailer Rental Agreements
+                  </h1>
+                  <p className="text-sm text-steel-600 mt-1">
+                    Each trailer has its own customizable rental agreement that
+                    customers must review and sign during booking before
+                    completing online payment.
+                  </p>
+                </div>
+
+                <div className="w-full sm:w-80">
+                  <label className="block text-xs font-bold uppercase text-steel-500 mb-1">
+                    Select Trailer to Edit Contract:
+                  </label>
+                  <select
+                    value={selectedContractTrailer.id}
+                    onChange={(e) =>
+                      setSelectedContractTrailerId(e.target.value)
+                    }
+                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-bold text-steel-900"
+                  >
+                    {siteData.fleet.map((t) => (
+                      <option key={t.id} value={t.id}>
+                        {t.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
-              <button
-                type="button"
-                onClick={() => setShowAddContractForm((prev) => !prev)}
-                className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm px-5 py-3 shadow-sm transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                <span>
-                  {showAddContractForm
-                    ? "Cancel New Contract"
-                    : "Create New Contract"}
-                </span>
-              </button>
-            </div>
 
-            {showAddContractForm && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (!newContractTitle.trim()) return;
-                  addContract({
-                    title: newContractTitle.trim(),
-                    slug: newContractTitle
-                      .toLowerCase()
-                      .replace(/[^a-z0-9]+/g, "-"),
-                    version: newContractVersion.trim() || "1.0",
-                    description:
-                      newContractDesc.trim() || "Custom rental agreement",
-                    bodyContent:
-                      newContractBody.trim() ||
-                      "Standard terms and conditions.",
-                    requiresDriverLicense: newContractLicense,
-                    requiresInsuranceProof: newContractInsurance,
-                    requiresSignature: newContractSignature,
-                    isActive: true,
-                  });
-                  setNewContractTitle("");
-                  setNewContractDesc("");
-                  setNewContractBody("");
-                  setShowAddContractForm(false);
-                  showToast("Created new rental contract template!");
-                }}
-                className="bg-white rounded-2xl border-2 border-brand-500 p-6 shadow-lg space-y-4"
-              >
-                <h2 className="font-display text-lg font-extrabold text-steel-900">
-                  Create Contract Template
-                </h2>
+              {/* Quick Trailer Selector Pills */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
+                {siteData.fleet.map((t) => {
+                  const isSelected = t.id === selectedContractTrailer.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => setSelectedContractTrailerId(t.id)}
+                      className={`shrink-0 rounded-xl px-3.5 py-2 text-xs font-bold border transition-colors ${
+                        isSelected
+                          ? "bg-steel-900 text-white border-steel-900"
+                          : "bg-steel-50 text-steel-700 border-steel-200 hover:bg-steel-100"
+                      }`}
+                    >
+                      {t.name}
+                    </button>
+                  );
+                })}
+              </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  <div className="sm:col-span-2">
+              {/* Selected Trailer Contract Editor */}
+              <div className="rounded-2xl bg-steel-50 border border-steel-200 p-5 sm:p-6 space-y-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-b border-steel-200 pb-4">
+                  <div className="flex items-center gap-2.5">
+                    <ShieldCheck className="w-6 h-6 text-brand-600" />
+                    <div>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand-700 block">
+                        Editing Contract For Trailer:
+                      </span>
+                      <h2 className="font-display text-lg sm:text-xl font-extrabold text-steel-900">
+                        {selectedContractTrailer.name}
+                      </h2>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      updateTrailerContract(
+                        selectedContractTrailer.id,
+                        createDefaultTrailerContract(
+                          selectedContractTrailer.name
+                        )
+                      );
+                      showToast(
+                        `Reset contract for "${selectedContractTrailer.name}" to default template`
+                      );
+                    }}
+                    className="rounded-xl bg-white hover:bg-steel-100 border border-steel-300 px-3.5 py-2 text-xs font-bold text-steel-700"
+                  >
+                    Reset This Trailer&apos;s Contract
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                  <div className="sm:col-span-3">
                     <label className="block text-xs font-bold uppercase text-steel-700 mb-1">
-                      Contract Title *
+                      Contract Title (Shown at Booking Step 2)
                     </label>
                     <input
                       type="text"
-                      required
-                      value={newContractTitle}
-                      onChange={(e) => setNewContractTitle(e.target.value)}
-                      placeholder="e.g., Madera Dump & Equipment Trailer Agreement"
-                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm"
+                      value={selectedContractTrailer.contract.title}
+                      onChange={(e) =>
+                        updateTrailerContract(selectedContractTrailer.id, {
+                          title: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-xl bg-white border border-steel-300 px-3.5 py-2.5 text-sm font-bold text-steel-900"
                     />
                   </div>
 
@@ -1639,220 +1761,96 @@ export default function AdminDashboardPage() {
                     </label>
                     <input
                       type="text"
-                      value={newContractVersion}
-                      onChange={(e) => setNewContractVersion(e.target.value)}
-                      placeholder="1.0"
-                      className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm"
+                      value={selectedContractTrailer.contract.version}
+                      onChange={(e) =>
+                        updateTrailerContract(selectedContractTrailer.id, {
+                          version: e.target.value,
+                        })
+                      }
+                      className="w-full rounded-xl bg-white border border-steel-300 px-3.5 py-2.5 text-sm font-semibold text-steel-900"
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase text-steel-700 mb-1">
-                    Short Description
+                    Short Summary Line
                   </label>
                   <input
                     type="text"
-                    value={newContractDesc}
-                    onChange={(e) => setNewContractDesc(e.target.value)}
-                    placeholder="Used for standard daily and weekly rentals..."
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm"
+                    value={selectedContractTrailer.contract.summary}
+                    onChange={(e) =>
+                      updateTrailerContract(selectedContractTrailer.id, {
+                        summary: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl bg-white border border-steel-300 px-3.5 py-2.5 text-sm text-steel-900"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold uppercase text-steel-700 mb-1">
-                    Contract Clauses &amp; Agreement Body
+                    Full Contract Clauses &amp; Rental Terms for This Trailer
                   </label>
                   <textarea
-                    rows={5}
-                    value={newContractBody}
-                    onChange={(e) => setNewContractBody(e.target.value)}
-                    placeholder="Enter rental agreement clauses, damage responsibility, late return policy, and tow safety requirements..."
-                    className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm"
+                    rows={8}
+                    value={selectedContractTrailer.contract.termsBody}
+                    onChange={(e) =>
+                      updateTrailerContract(selectedContractTrailer.id, {
+                        termsBody: e.target.value,
+                      })
+                    }
+                    className="w-full rounded-xl bg-white border border-steel-300 px-4 py-3 text-sm text-steel-900 leading-relaxed"
                   />
                 </div>
 
-                <div className="flex flex-wrap items-center gap-5 pt-1">
-                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800">
+                <div className="flex flex-wrap items-center gap-6 pt-1">
+                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={newContractLicense}
-                      onChange={(e) => setNewContractLicense(e.target.checked)}
-                    />
-                    <span>Requires Driver&apos;s License</span>
-                  </label>
-                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800">
-                    <input
-                      type="checkbox"
-                      checked={newContractInsurance}
+                      checked={
+                        selectedContractTrailer.contract.requiresDriverLicense
+                      }
                       onChange={(e) =>
-                        setNewContractInsurance(e.target.checked)
+                        updateTrailerContract(selectedContractTrailer.id, {
+                          requiresDriverLicense: e.target.checked,
+                        })
                       }
                     />
-                    <span>Requires Proof of Insurance</span>
+                    <span>Requires Driver&apos;s License Confirmation</span>
                   </label>
-                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800">
+
+                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800 cursor-pointer">
                     <input
                       type="checkbox"
-                      checked={newContractSignature}
+                      checked={
+                        selectedContractTrailer.contract.requiresInsuranceProof
+                      }
                       onChange={(e) =>
-                        setNewContractSignature(e.target.checked)
+                        updateTrailerContract(selectedContractTrailer.id, {
+                          requiresInsuranceProof: e.target.checked,
+                        })
                       }
                     />
-                    <span>Requires E-Signature</span>
+                    <span>Requires Proof of Insurance Confirmation</span>
+                  </label>
+
+                  <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-800 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={
+                        selectedContractTrailer.contract.requiresSignature
+                      }
+                      onChange={(e) =>
+                        updateTrailerContract(selectedContractTrailer.id, {
+                          requiresSignature: e.target.checked,
+                        })
+                      }
+                    />
+                    <span>Requires Digital Signature Before Payment</span>
                   </label>
                 </div>
-
-                <div className="flex justify-end gap-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddContractForm(false)}
-                    className="rounded-xl border border-steel-300 px-4 py-2 text-xs font-bold"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="rounded-xl bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 text-xs font-bold"
-                  >
-                    Save Contract Template
-                  </button>
-                </div>
-              </form>
-            )}
-
-            <div className="space-y-4">
-              {siteData.contracts.map((contract) => {
-                const assignedTrailers = siteData.fleet.filter(
-                  (t) => t.defaultContractId === contract.id
-                );
-                return (
-                  <div
-                    key={contract.id}
-                    className="bg-white rounded-2xl border border-steel-200 p-6 shadow-sm space-y-4"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-4 border-b border-steel-100 pb-4">
-                      <div className="space-y-1 flex-1 min-w-[240px]">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <ShieldCheck className="w-5 h-5 text-brand-600" />
-                          <input
-                            type="text"
-                            value={contract.title}
-                            onChange={(e) =>
-                              updateContract(contract.id, {
-                                title: e.target.value,
-                              })
-                            }
-                            className="font-display text-lg font-extrabold text-steel-900 bg-steel-50 border border-steel-300 rounded-lg px-3 py-1 flex-1"
-                          />
-                          <input
-                            type="text"
-                            value={contract.version}
-                            onChange={(e) =>
-                              updateContract(contract.id, {
-                                version: e.target.value,
-                              })
-                            }
-                            className="w-24 rounded-lg bg-brand-50 border border-brand-200 px-2.5 py-1 text-xs font-bold text-brand-800"
-                          />
-                        </div>
-                        <p className="text-xs text-steel-500">
-                          Assigned to {assignedTrailers.length}{" "}
-                          {assignedTrailers.length === 1
-                            ? "trailer"
-                            : "trailers"}
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => {
-                          deleteContract(contract.id);
-                          showToast(`Deleted contract "${contract.title}"`);
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-700 px-3 py-2 text-xs font-bold"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                        <span>Delete Contract</span>
-                      </button>
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-steel-500 mb-1">
-                        Description
-                      </label>
-                      <input
-                        type="text"
-                        value={contract.description}
-                        onChange={(e) =>
-                          updateContract(contract.id, {
-                            description: e.target.value,
-                          })
-                        }
-                        className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2 text-sm"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold uppercase text-steel-500 mb-1">
-                        Contract Terms &amp; Body Content
-                      </label>
-                      <textarea
-                        rows={4}
-                        value={contract.bodyContent}
-                        onChange={(e) =>
-                          updateContract(contract.id, {
-                            bodyContent: e.target.value,
-                          })
-                        }
-                        className="w-full rounded-xl bg-steel-50 border border-steel-300 px-3.5 py-2.5 text-sm font-mono"
-                      />
-                    </div>
-
-                    <div className="flex flex-wrap items-center gap-6 pt-1">
-                      <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={contract.requiresDriverLicense}
-                          onChange={(e) =>
-                            updateContract(contract.id, {
-                              requiresDriverLicense: e.target.checked,
-                            })
-                          }
-                        />
-                        <span>Requires Driver&apos;s License</span>
-                      </label>
-
-                      <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={contract.requiresInsuranceProof}
-                          onChange={(e) =>
-                            updateContract(contract.id, {
-                              requiresInsuranceProof: e.target.checked,
-                            })
-                          }
-                        />
-                        <span>Requires Insurance Verification</span>
-                      </label>
-
-                      <label className="inline-flex items-center gap-2 text-xs font-bold text-steel-700 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={contract.requiresSignature}
-                          onChange={(e) =>
-                            updateContract(contract.id, {
-                              requiresSignature: e.target.checked,
-                            })
-                          }
-                        />
-                        <span>Requires Digital Signature</span>
-                      </label>
-                    </div>
-                  </div>
-                );
-              })}
+              </div>
             </div>
           </div>
         )}
@@ -1928,7 +1926,7 @@ export default function AdminDashboardPage() {
               </div>
             </div>
 
-            {/* FAQs CRUD */}
+            {/* FAQs Manager */}
             <div className="lg:col-span-6 space-y-4">
               <div className="bg-white rounded-2xl p-6 border border-steel-200 shadow-sm space-y-4">
                 <h2 className="font-display text-xl font-extrabold text-steel-900 border-b border-steel-200 pb-3">

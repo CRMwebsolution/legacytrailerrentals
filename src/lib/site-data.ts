@@ -1,6 +1,5 @@
 import { SITE_CONFIG, TRAILER_CATEGORIES } from "@/config/site.config";
 import {
-  DEMO_CONTRACT_TEMPLATES,
   DEMO_FAQS,
   DEMO_FLEET_ITEMS,
   DEMO_POLICY_SECTIONS,
@@ -29,9 +28,9 @@ export const DEFAULT_BUSINESS_SETTINGS: BusinessSettings = {
   businessHoursDisplay: SITE_CONFIG.BUSINESS_HOURS_DISPLAY,
   instagramHandle: SITE_CONFIG.INSTAGRAM_HANDLE,
   instagramUrl: SITE_CONFIG.INSTAGRAM_URL,
-  facebookUrl: "#facebook-placeholder",
+  facebookUrl: "",
   facebookLabel: SITE_CONFIG.FACEBOOK_PLACEHOLDER_LABEL,
-  googleBusinessUrl: "#google-profile-placeholder",
+  googleBusinessUrl: "",
   googleBusinessLabel: SITE_CONFIG.GOOGLE_BUSINESS_PLACEHOLDER_LABEL,
   surroundingServiceAreas: [
     {
@@ -58,22 +57,10 @@ export const DEFAULT_BUSINESS_SETTINGS: BusinessSettings = {
   heroHeadline: "Reliable Trailer Rentals in",
   heroHighlightText: "Madera, California",
   heroSubheadline:
-    "Affordable rental options and a straightforward request process for local hauling, property cleanup, moving, and vehicle or equipment transport. Browse trailer styles below and send a rental request for the dates you need.",
+    "Affordable rental options and a simple booking process for local hauling, property cleanup, moving, and vehicle or equipment transport. Choose your trailer below, sign the rental agreement, and book online.",
   isVisualMvpDemo: SITE_CONFIG.IS_VISUAL_MVP_DEMO,
 };
 
-/**
- * Single data-provider entrypoint for the entire application.
- *
- * Right now (Visual MVP Demo), this returns the structured in-memory seed data.
- * When a database (e.g., Supabase) and Admin Dashboard are added later, this
- * function can query:
- *   - `business_settings` (hours, phones, emails, addresses, service areas)
- *   - `inventory` + `inventory_photos` + `pricing_rules` (trailers, photos, prices)
- *   - `policy_sections` + `faqs` (policies & FAQ accordions)
- *   - `contracts` (CRUD contract templates)
- * without requiring structural rewrites across the homepage UI components.
- */
 export function getInitialSiteData(): SiteDataPayload {
   return {
     settings: DEFAULT_BUSINESS_SETTINGS,
@@ -87,13 +74,9 @@ export function getInitialSiteData(): SiteDataPayload {
     faqs: DEMO_FAQS.filter((faq) => faq.isActive).sort(
       (a, b) => a.sortOrder - b.sortOrder
     ),
-    contracts: DEMO_CONTRACT_TEMPLATES.filter((c) => c.isActive),
   };
 }
 
-/**
- * Helper to resolve the primary cover photo for a trailer item.
- */
 export function getPrimaryTrailerPhoto(
   trailer: TrailerInventoryItem
 ): TrailerPhoto {
@@ -113,11 +96,6 @@ export function getPrimaryTrailerPhoto(
   );
 }
 
-/**
- * Helper to resolve a formatted rate display from a trailer's `pricingRules`.
- * In future production mode, if `rule.amount` is set in the Admin Dashboard
- * (e.g. `110`), it formats `$110 / day`; otherwise it displays `displayLabel`.
- */
 export function getTrailerRateDisplay(
   trailer: TrailerInventoryItem,
   rateType: "daily" | "weekly" | "monthly" | "security_deposit"

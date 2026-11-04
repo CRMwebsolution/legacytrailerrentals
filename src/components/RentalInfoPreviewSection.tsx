@@ -43,7 +43,7 @@ export function RentalInfoPreviewSection({
 
           <div className="inline-flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-4 py-2.5 text-xs font-semibold text-amber-900">
             <Info className="w-4 h-4 text-amber-700 shrink-0" />
-            <span>No policies have been invented—awaiting owner specifics.</span>
+            <span>No policies have been invented; awaiting owner specifics.</span>
           </div>
         </div>
 
@@ -85,7 +85,7 @@ export function RentalInfoPreviewSection({
                 </div>
 
                 <div className="pt-3 border-t border-steel-100 flex items-center justify-between text-xs text-steel-500">
-                  <span>Policy slot ready for owner / Admin CMS copy</span>
+                  <span>Policy slot editable in Admin Dashboard</span>
                   <a
                     href="#contact"
                     className="font-bold text-brand-600 hover:text-brand-700"

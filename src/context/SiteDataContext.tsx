@@ -4,10 +4,10 @@ import React, { createContext, useContext, useState, useCallback } from "react";
 import { getInitialSiteData } from "@/lib/site-data";
 import {
   BusinessSettings,
-  ContractTemplate,
   FaqEntry,
   RentalPolicySection,
   SiteDataPayload,
+  TrailerContract,
   TrailerFilterCategory,
   TrailerInventoryItem,
   TrailerPhoto,
@@ -63,6 +63,12 @@ interface SiteDataContextValue {
     pricingRules: TrailerPricingRule[]
   ) => void;
 
+  // Per-Trailer Contract mutation
+  updateTrailerContract: (
+    inventoryId: string,
+    patch: Partial<TrailerContract>
+  ) => void;
+
   // Trailer Photo mutations
   addTrailerPhoto: (
     inventoryId: string,
@@ -78,16 +84,6 @@ interface SiteDataContextValue {
 
   // Categories mutation
   addCategory: (categoryName: string) => void;
-
-  // Contracts CRUD
-  addContract: (
-    contract: Omit<ContractTemplate, "id" | "updatedAt">
-  ) => void;
-  updateContract: (
-    id: string,
-    patch: Partial<Omit<ContractTemplate, "id">>
-  ) => void;
-  deleteContract: (id: string) => void;
 
   // Policies & FAQs mutations
   updatePolicySection: (
@@ -144,7 +140,6 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
     setChangeCount(0);
   }, []);
 
-  // Settings
   const updateSettings = useCallback(
     (patch: Partial<BusinessSettings>) => {
       setSiteData((prev) => ({
@@ -159,7 +154,6 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
     [bumpChange]
   );
 
-  // Inventory CRUD
   const addTrailer = useCallback(
     (trailer: TrailerInventoryItem) => {
       setSiteData((prev) => {
@@ -216,7 +210,28 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
     [bumpChange]
   );
 
-  // Photos CRUD
+  const updateTrailerContract = useCallback(
+    (inventoryId: string, patch: Partial<TrailerContract>) => {
+      setSiteData((prev) => ({
+        ...prev,
+        fleet: prev.fleet.map((item) =>
+          item.id === inventoryId
+            ? {
+                ...item,
+                contract: {
+                  ...item.contract,
+                  ...patch,
+                  updatedAt: new Date().toISOString(),
+                },
+              }
+            : item
+        ),
+      }));
+      bumpChange();
+    },
+    [bumpChange]
+  );
+
   const addTrailerPhoto = useCallback(
     (
       inventoryId: string,
@@ -326,53 +341,6 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
     [bumpChange]
   );
 
-  // Contracts CRUD
-  const addContract = useCallback(
-    (contract: Omit<ContractTemplate, "id" | "updatedAt">) => {
-      const newContract: ContractTemplate = {
-        ...contract,
-        id: `contract-${Date.now()}`,
-        updatedAt: new Date().toISOString(),
-      };
-      setSiteData((prev) => ({
-        ...prev,
-        contracts: [newContract, ...prev.contracts],
-      }));
-      bumpChange();
-    },
-    [bumpChange]
-  );
-
-  const updateContract = useCallback(
-    (id: string, patch: Partial<Omit<ContractTemplate, "id">>) => {
-      setSiteData((prev) => ({
-        ...prev,
-        contracts: prev.contracts.map((c) =>
-          c.id === id
-            ? { ...c, ...patch, updatedAt: new Date().toISOString() }
-            : c
-        ),
-      }));
-      bumpChange();
-    },
-    [bumpChange]
-  );
-
-  const deleteContract = useCallback(
-    (id: string) => {
-      setSiteData((prev) => ({
-        ...prev,
-        contracts: prev.contracts.filter((c) => c.id !== id),
-        fleet: prev.fleet.map((t) =>
-          t.defaultContractId === id ? { ...t, defaultContractId: null } : t
-        ),
-      }));
-      bumpChange();
-    },
-    [bumpChange]
-  );
-
-  // Policies & FAQs
   const updatePolicySection = useCallback(
     (id: string, patch: Partial<RentalPolicySection>) => {
       setSiteData((prev) => ({
@@ -440,14 +408,12 @@ export function SiteDataProvider({ children }: { children: React.ReactNode }) {
         updateTrailer,
         deleteTrailer,
         updateTrailerPricing,
+        updateTrailerContract,
         addTrailerPhoto,
         setPrimaryTrailerPhoto,
         updateTrailerPhotoCaption,
         deleteTrailerPhoto,
         addCategory,
-        addContract,
-        updateContract,
-        deleteContract,
         updatePolicySection,
         addFaq,
         updateFaq,

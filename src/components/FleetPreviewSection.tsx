@@ -6,7 +6,7 @@ import {
   Camera,
   Ruler,
   Weight,
-  Clock,
+  FileSignature,
   ArrowRight,
   X,
   Info,
@@ -27,13 +27,13 @@ import {
 interface FleetPreviewSectionProps {
   fleet?: TrailerInventoryItem[];
   categories?: TrailerFilterCategory[];
-  onSelectTrailerForRequest: (trailerName: string) => void;
+  onSelectTrailerForBooking: (trailerName: string) => void;
 }
 
 export function FleetPreviewSection({
   fleet = DEMO_FLEET_ITEMS,
   categories = [...TRAILER_CATEGORIES],
-  onSelectTrailerForRequest,
+  onSelectTrailerForBooking,
 }: FleetPreviewSectionProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] =
@@ -90,11 +90,12 @@ export function FleetPreviewSection({
             </h2>
             <p className="text-sm sm:text-base text-steel-600 leading-relaxed">
               Filter by category or search by trailer size and job type. When
-              you find the right style, click{" "}
+              you find the right trailer, click{" "}
               <strong className="text-steel-900 font-semibold">
-                Request This Trailer
+                Book This Trailer
               </strong>{" "}
-              to check dates with our Madera team.
+              to select your dates, sign the rental agreement, and complete
+              checkout.
             </p>
           </div>
 
@@ -272,11 +273,11 @@ export function FleetPreviewSection({
                         </h3>
                       </div>
 
-                      {/* Prominent Rate Placeholder Box (Driven by `pricingRules`) */}
+                      {/* Prominent Rate Placeholder Box */}
                       <div className="rounded-xl bg-steel-50 border border-steel-200 p-3.5 flex items-center justify-between gap-2">
                         <div>
                           <span className="text-[11px] font-bold uppercase tracking-wider text-steel-500 block">
-                            Sample Rate Placeholder
+                            Rental Rate
                           </span>
                           <div className="flex items-baseline gap-1.5 mt-0.5">
                             <span className="font-display text-2xl font-black text-steel-900">
@@ -294,7 +295,7 @@ export function FleetPreviewSection({
                         )}
                       </div>
 
-                      {/* Dimensions & Capacity / Important Feature */}
+                      {/* Dimensions, Capacity & Contract Info */}
                       <div className="space-y-2.5 text-xs sm:text-sm">
                         <div className="flex items-start gap-2.5 text-steel-700">
                           <Ruler className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
@@ -317,12 +318,14 @@ export function FleetPreviewSection({
                         </div>
 
                         <div className="flex items-start gap-2.5 text-steel-700">
-                          <Clock className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
+                          <FileSignature className="w-4 h-4 text-brand-600 shrink-0 mt-0.5" />
                           <div>
                             <span className="font-bold text-steel-900">
-                              Availability:{" "}
+                              Agreement:{" "}
                             </span>
-                            <span>{trailer.availabilityStatusText}</span>
+                            <span>
+                              {trailer.contract.title} (Signed at booking)
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -344,11 +347,11 @@ export function FleetPreviewSection({
                   {/* Card Footer CTA */}
                   <div className="px-5 pb-5 sm:px-6 sm:pb-6 pt-2">
                     <a
-                      href="#rental-request"
-                      onClick={() => onSelectTrailerForRequest(trailer.name)}
+                      href="#booking-form"
+                      onClick={() => onSelectTrailerForBooking(trailer.name)}
                       className="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 active:bg-brand-800 text-white font-bold text-sm py-3.5 px-4 shadow-sm transition-all"
                     >
-                      <span>Request This Trailer</span>
+                      <span>Book This Trailer</span>
                       <ArrowRight className="w-4 h-4" />
                     </a>
                   </div>
@@ -373,9 +376,8 @@ export function FleetPreviewSection({
                 Multi-Angle Trailer Photo Showcase
               </h3>
               <p className="text-xs sm:text-sm text-steel-400">
-                Demonstrates where real walkaround photos uploaded via the
-                future Admin Dashboard will appear. Click any photo to preview
-                the gallery modal.
+                Demonstrates where walkaround photos uploaded via the Admin
+                Dashboard appear. Click any photo to preview the gallery modal.
               </p>
             </div>
             <span className="shrink-0 self-start sm:self-center rounded-lg bg-steel-800 border border-steel-700 px-3 py-1.5 text-xs font-semibold text-brand-300">
@@ -454,7 +456,7 @@ export function FleetPreviewSection({
                   className="w-full h-full object-cover"
                 />
                 <span className="absolute top-3 left-3 rounded-lg bg-steel-950/85 text-white px-3 py-1 text-xs font-bold">
-                  Primary Placeholder Image
+                  Primary Cover Image
                 </span>
               </div>
 
@@ -487,14 +489,14 @@ export function FleetPreviewSection({
                   Close Preview
                 </button>
                 <a
-                  href="#rental-request"
+                  href="#booking-form"
                   onClick={() => {
-                    onSelectTrailerForRequest(activeGalleryItem.name);
+                    onSelectTrailerForBooking(activeGalleryItem.name);
                     setActiveGalleryItem(null);
                   }}
                   className="inline-flex items-center gap-2 rounded-xl bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 text-xs font-bold"
                 >
-                  <span>Request This Trailer</span>
+                  <span>Book This Trailer</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>

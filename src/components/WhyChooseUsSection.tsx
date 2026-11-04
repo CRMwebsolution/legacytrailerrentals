@@ -1,5 +1,5 @@
 import React from "react";
-import { MapPin, Wallet, ClipboardCheck, UserCheck } from "lucide-react";
+import { MapPin, Wallet, CalendarCheck, UserCheck } from "lucide-react";
 
 const BENEFITS = [
   {
@@ -15,15 +15,15 @@ const BENEFITS = [
     icon: Wallet,
   },
   {
-    title: "Straightforward rental requests",
+    title: "Simple online booking",
     description:
-      "No complicated account creation or confusing checkout steps—simply send your requested dates and trailer choice to get started.",
-    icon: ClipboardCheck,
+      "Choose your trailer and dates, sign your rental agreement digitally, and complete payment in one clear booking flow.",
+    icon: CalendarCheck,
   },
   {
     title: "Helpful personal service",
     description:
-      "Communicate directly with the business to confirm availability, review tow requirements, and coordinate a smooth pickup.",
+      "Reach out directly whenever you have questions about tow vehicle compatibility, hitch requirements, or scheduling.",
     icon: UserCheck,
   },
 ];
@@ -43,7 +43,7 @@ export function WhyChooseUsSection() {
             Dependable Local Trailer Rentals in Madera
           </h2>
           <p className="text-sm sm:text-base text-steel-600 leading-relaxed">
-            Built around simple communication, practical rental options, and
+            Built around clear communication, practical rental options, and
             attentive local support.
           </p>
         </div>
@@ -56,7 +56,7 @@ export function WhyChooseUsSection() {
                 key={benefit.title}
                 className="rounded-2xl bg-steel-50 border border-steel-200/90 p-6 space-y-4 hover:border-brand-300 hover:shadow-md transition-all"
               >
-                <div className="w-12 h-12 rounded-xl bg-brand-500 text-white flex items-center justify-center shadow-sm">
+                <div className="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center shadow-sm">
                   <Icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-display text-lg font-extrabold text-steel-900">

@@ -1,9 +1,9 @@
 import React from "react";
 import {
   Search,
-  Send,
-  CheckCircle2,
+  CalendarCheck,
   Truck,
+  RotateCcw,
   ArrowRight,
 } from "lucide-react";
 
@@ -12,33 +12,33 @@ const STEPS = [
     number: "01",
     title: "Choose a Trailer",
     description:
-      "Browse the trailer categories and sample specifications to find the style that fits your load, project, or tow vehicle.",
+      "Browse the trailer categories and specifications to find the right size and style for your load, project, or tow vehicle.",
     icon: Search,
-    badge: "Browse Fleet",
+    badge: "Step 1",
   },
   {
     number: "02",
-    title: "Send a Rental Request",
+    title: "Book",
     description:
-      "Submit your requested pickup and return dates, trailer choice, and contact info using the simple request form or by reaching out directly.",
-    icon: Send,
-    badge: "No Instant Checkout Required",
+      "Select your pickup and return dates, review and sign the trailer's rental agreement, and complete your online payment.",
+    icon: CalendarCheck,
+    badge: "Step 2",
   },
   {
     number: "03",
-    title: "Receive Availability Confirmation",
+    title: "Pick Up",
     description:
-      "Legacy Trailer Rentals LLC reviews your request and contacts you personally to confirm date availability, pricing, and rental requirements.",
-    icon: CheckCircle2,
-    badge: "Personal Confirmation",
+      "Arrive in Madera at your scheduled time (or coordinate your requested delivery) to hook up your trailer and start your job.",
+    icon: Truck,
+    badge: "Step 3",
   },
   {
     number: "04",
-    title: "Pick Up and Return",
+    title: "Return",
     description:
-      "Meet in Madera at your confirmed time to hook up your trailer, complete your rental, and return it as scheduled when your job is done.",
-    icon: Truck,
-    badge: "Madera, CA",
+      "Bring the trailer back clean and on schedule when your haul is finished.",
+    icon: RotateCcw,
+    badge: "Step 4",
   },
 ];
 
@@ -55,12 +55,11 @@ export function HowItWorksSection() {
             Simple 4-Step Process
           </div>
           <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-steel-900 tracking-tight">
-            How Renting Works
+            How It Works
           </h2>
           <p className="text-sm sm:text-base text-steel-600 leading-relaxed">
-            Renting a trailer is straightforward. Submit a request with your
-            desired dates and we will personally follow up to confirm
-            availability and coordinate pickup in Madera.
+            Choose your trailer, sign your rental agreement and book online,
+            pick up in Madera, and return when your project is done.
           </p>
         </div>
 

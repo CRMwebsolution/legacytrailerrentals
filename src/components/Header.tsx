@@ -73,7 +73,9 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
               {adminUser ? (
                 <>
                   <Sliders className="w-3.5 h-3.5 text-brand-400" />
-                  <span>Open Admin Dashboard ({adminUser.email.split("@")[0]})</span>
+                  <span>
+                    Open Admin Dashboard ({adminUser.email.split("@")[0]})
+                  </span>
                 </>
               ) : (
                 <>
@@ -135,7 +137,7 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
               ))}
             </nav>
 
-            {/* Desktop Prominent Phone / Contact Button */}
+            {/* Desktop Prominent Phone / Book Button */}
             <div className="hidden lg:flex items-center gap-3">
               <a
                 href={
@@ -144,7 +146,7 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                     : "#contact"
                 }
                 className="inline-flex items-center gap-2.5 rounded-xl bg-steel-900 hover:bg-steel-800 text-white px-4 py-2.5 text-sm font-semibold transition-all shadow-sm"
-                title="Phone number — editable from Admin Dashboard"
+                title="Phone number (editable from Admin Dashboard)"
               >
                 <Phone className="w-4 h-4 text-brand-400 shrink-0" />
                 <div className="text-left leading-tight">
@@ -157,10 +159,10 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                 </div>
               </a>
               <a
-                href="#rental-request"
+                href="#booking-form"
                 className="inline-flex items-center justify-center rounded-xl bg-brand-600 hover:bg-brand-700 text-white px-4 py-3 text-sm font-bold shadow-sm transition-all"
               >
-                Request a Rental
+                Book a Trailer
               </a>
             </div>
 
@@ -222,11 +224,11 @@ export function Header({ settings = DEFAULT_BUSINESS_SETTINGS }: HeaderProps) {
                   </span>
                 </a>
                 <a
-                  href="#rental-request"
+                  href="#booking-form"
                   onClick={() => setMobileMenuOpen(false)}
                   className="flex items-center justify-center rounded-xl bg-brand-600 hover:bg-brand-700 text-white px-4 py-3.5 text-sm font-bold shadow-sm"
                 >
-                  Request a Rental
+                  Book a Trailer
                 </a>
                 <Link
                   href="/admin"

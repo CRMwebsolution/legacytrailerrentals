@@ -1,7 +1,7 @@
 import React from "react";
 import {
   ArrowRight,
-  ClipboardList,
+  CalendarCheck,
   MapPin,
   ShieldCheck,
   Sparkles,
@@ -61,11 +61,11 @@ export function HeroSection({
               <span className="text-steel-600 hidden sm:inline">•</span>
               <span className="inline-flex items-center gap-1.5 font-medium">
                 <Sparkles className="w-4 h-4 text-brand-400 shrink-0" />
-                Simple request-first process
+                Sign contract &amp; book online
               </span>
               <span className="text-steel-600 hidden sm:inline">•</span>
               <span className="inline-flex items-center gap-1.5 font-medium">
-                Personal availability confirmation
+                Easy pickup &amp; return
               </span>
             </div>
 
@@ -79,19 +79,13 @@ export function HeroSection({
                 <ArrowRight className="w-5 h-5" />
               </a>
               <a
-                href="#rental-request"
+                href="#booking-form"
                 className="inline-flex items-center justify-center gap-2.5 rounded-xl bg-steel-900 hover:bg-steel-800 text-white border border-steel-700 font-bold text-base px-7 py-4 transition-all"
               >
-                <ClipboardList className="w-5 h-5 text-brand-400" />
-                <span>Request a Rental</span>
+                <CalendarCheck className="w-5 h-5 text-brand-400" />
+                <span>Book a Trailer</span>
               </a>
             </div>
-
-            {/* Clear Expectation Note */}
-            <p className="text-xs text-steel-400 max-w-xl">
-              * Submitting a rental request allows our team to review your dates
-              and tow setup and follow up directly to confirm availability.
-            </p>
           </div>
 
           {/* Right Column: Strong Trailer-Focused Image Card */}
