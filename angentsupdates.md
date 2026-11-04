@@ -105,3 +105,21 @@ Chronological handoff and change log for `LegacyTrailerRental`.
 ### Other relevant changes
 
 - Verified zero TypeScript errors (`npx tsc --noEmit`) and clean Next.js production build (`npm run build`).
+
+
+## 2026-11-04 12:02 PM EST — Antigravity (Gemini 4 Argon)
+
+### What it did
+
+- Cleaned up tablet and desktop navbar layout in `src/components/Header.tsx`:
+  - Moved the full 6-link inline navigation bar to the `xl` (`1280px+`) breakpoint so tablet viewports (`768px` to `1279px`) stay uncluttered with only the brand logo on the left and compact Phone, `Book a Trailer`, and Menu buttons on the right.
+  - Added `whitespace-nowrap` to the brand title, nav links, phone button, and CTA button, removed the floating `LLC` badge, and shortened the compact navbar phone label so nothing wraps onto multiple lines.
+- Added outside-click and outside-tap (`mousedown`, `touchstart`, `Escape` key, and backdrop overlay) menu dismissal in `src/components/Header.tsx` so clicking anywhere outside the mobile/tablet menu closes it immediately.
+
+### Database changes
+
+- None.
+
+### Other relevant changes
+
+- Verified clean TypeScript check (`npx tsc --noEmit`) and production build (`npm run build`).
